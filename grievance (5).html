@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Grievance Addressal Portal</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffe4f0; /* light pink background */
+    color: #000; /* black text */
+    margin: 0; padding: 0;
+  }
+  .container {
+    max-width: 600px; margin: 20px auto; background: #ffcce6; padding: 20px; border-radius: 12px;
+    box-shadow: 0 0 10px #ffb3d1;
+  }
+  h1, h2, h3, h4 {
+    color: #d6336c; /* dark pink */
+    text-align: center;
+  }
+  label {
+    display: block; margin-top: 15px; font-weight: bold;
+  }
+  select, input[type="text"], input[type="password"] {
+    width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #d6336c;
+  }
+  button {
+    background: #d6336c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #a02b54;
+  }
+  .logout-btn {
+    background: #f06292;
+    margin-top: 10px;
+  }
+  .history-list {
+    background: #fff0f6;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .history-item {
+    border-bottom: 1px solid #f8bbd0;
+    padding: 5px 0;
+  }
+  .history-item:last-child {
+    border-bottom: none;
+  }
+  .shivam-header {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #d6336c;
+  }
+  .shivam-header h3, .shivam-header h4 {
+    margin: 5px 0;
+  }
+  .thankyou-message {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 18px;
+    color: #d6336c;
+  }
+</style>
+</head>
+<body>
+<div id="app" class="container"></div>
+
+<script>
+(() => {
+  const app = document.getElementById('app');
+
+  // Credentials
+  const users = {
+    anjali: 'love123',
+    shivam: 'heart456'
+  };
+
+  // Anjali grievance data options
+  const grievancesList = [
+    "Forgot to say I love you 😤",
+    "Didn't reply for 5 hours 😭",
+    "Watched our show without me 😠",
+    "Didn't compliment my selfie 😑",
+    "Used 'k' instead of 'okay' 😡",
+    "Didn't send a good morning text 🌥️",
+    "No voice note today 🎙️",
+    "Missed our video call 🥺",
+    "Too busy for me again 🤨",
+    "Didn’t flirt with me all day 💔",
+    "Forgot our monthly anniversary 🙄",
+    "Didn't sing for me on call 🎶",
+    "No cute emojis today 😕",
+    "Didn't call me princess 👑",
+    "No surprise texts all day 📱",
+    "Sent a boring reply 😴",
+    "Was online but didn't text 😤",
+    "Didn’t write me a poem 📜",
+    "Too clingy or too distant 😬",
+    "Didn’t plan our next date 💔"
+  ];
+
+  const moodsList = [
+    "🥺 Helpless baby",
+    "😠 Hulk mode on",
+    "😭 Crying nonstop",
+    "😕 Confused AF",
+    "😡 Little angry muffin",
+    "🫠 Melting in love & rage",
+    "🙄 Queen with high expectations",
+    "💁 Diva mode activated",
+    "🥰 Still in love",
+    "👸 Waiting to be pampered"
+  ];
+
+  const severityList = [
+    "Just a pinch 🧂",
+    "Medium rare annoyance 😐",
+    "Hot mess 🔥",
+    "Drama queen level 👑",
+    "High alert 🚨",
+    "Ultra-level breakdown 🫨",
+    "Emotional Tsunami 🌊",
+    "Call 911 immediately 🆘"
+  ];
+
+  const fixitList = [
+    "Say sorry 3 times 😌",
+    "Send chocolates 🍫",
+    "Plan a surprise date 🗓️",
+    "Write a love poem 📝",
+    "Make a dancing video 💃",
+    "Sing a romantic song 🎤",
+    "Video call me for 2 hours 📞",
+    "Mail me a letter 💌",
+    "Buy matching accessories 👕👚",
+    "Send a voice note saying I’m the best 🎧",
+    "Recreate our first date 🥰",
+    "Make a meme about us 🖼️",
+    "Do a public Insta story 💖",
+    "Call me 'baby' 100 times 📲",
+    "Send a care package 📦",
+    "Make a playlist just for me 🎶",
+    "Draw a sketch of us 🎨",
+    "Make a promise & keep it 🤞",
+    "Dance on my fav song 🎼",
+    "Apologize with puppy eyes 🐶",
+    "Send a surprise gift 🎁",
+    "Write a cute note 📝",
+    "Bake me cookies 🍪",
+    "Send me funny TikToks 🤣",
+    "Plan a movie night 🎬"
+  ];
+
+  const shivamFixReplies = [
+    "I'm sorry my love! You're my world 🌎💖",
+    "Forgive me, princess. I’ll make it up with kisses 😘",
+    "Planning a surprise just for you 💕",
+    "I'll never forget again. Pinky promise 💞",
+    "Probably a kitkat can fix this 🍫",
+    "Sending you lots of chummi & puchi 😘",
+    "I miss you more than pizza on a sad day.",
+    "I’m sending 100 virtual forehead kisses right now.",
+    "I promise to fix this with extra cuddles when I see you.",
+    "Your grievance has been heard by the Love Department. Fix in progress!",
+    "I shall write you a poem to make up for this injustice.",
+    "This issue will be resolved with a handwritten letter and a Spotify playlist.",
+    "Let’s facetime tonight and I’ll let you rant for as long as you want.",
+    "I’m putting your name in my heart’s priority inbox.",
+    "I’m guilty as charged and deserve tickle punishment.",
+    "I will send a meme every hour until you forgive me.",
+    "You are my one-person HR team and I adore you.",
+    "Fix: I’m coming with chocolates. Spiritually. For now.",
+    "I shall fix this with a 3-hour-long phone call about nothing and everything.",
+    "I'm emotionally available now. Let’s fix this like rom-com stars.",
+    "I’m sorry for this betrayal. Here's a virtual bouquet 🌹",
+    "Love is the fix. And I’m giving it in bulk.",
+    "Let me fix this by listening with my whole heart.",
+    "Sending a heart emoji for every regret I have.",
+    "I’m making a playlist called 'Songs to Apologize to Anjali With'.",
+    "You deserve all the apologies and forehead kisses.",
+    "Consider this grievance escalated to 'Most Important'.",
+    "Next time I see you, I’ll read this complaint out loud and fix it dramatically.",
+    "I will now enter 'make-Anjali-smile mode'.",
+    "You just unlocked a bonus fix: movie night planning!",
+    "Fix scheduled: talking it out with sleepy eyes and full heart.",
+    "Forgive me with a rose 🌹 and this reply.",
+    "My heart is filing an apology note to yours.",
+    "Complaint resolved by the Shivam Emotional Care Unit™.",
+    "I’m writing a love haiku to fix this.",
+    "Expect a love letter in your DMs. 🌙",
+    "Sending my love wrapped in a sincere sorry.",
+    "I'll hug this complaint away next time.",
+    "Love fix activated. Full effort mode: ON.",
+    "I've added this to the 'Do Better for Anjali' list.",
+    "One compliment a day until your smile returns.",
+    "Let me serenade you later. (Badly, but sincerely.)",
+    "I hear you, I adore you, I’m fixing this.",
+    "Let’s talk it out in our favorite voice tones.",
+    "This shall be healed with my most dramatic apology.",
+    "I accept all charges. Love is my only defense.",
+    "You’ve been issued 1000 kisses as compensation.",
+    "Complaint logged, love response dispatched. 🚀",
+    "Forgiveness delivery arriving with hugs and snacks.",
+    "Please press 'Forgive' after reading this message ❤️",
+    "You win. I’m yours. Let’s fix it with love.",
+    "You’re right. I’m cute but wrong. Fixing it.",
+    "Your feelings are valid and precious to me.",
+    "Let me send you a cheesy meme. Or ten.",
+    "I will now speak in cute for the next hour.",
+    "No more mess-ups. Only makeup hugs coming soon."
+  ];
+
+  // Data storage keys
+  const STORAGE_KEY = 'grievanceData';
+
+  // Utility: get saved data or empty defaults
+  function getData() {
+    const d = localStorage.getItem(STORAGE_KEY);
+    if (d) return JSON.parse(d);
+    return {
+      grievances: [], // {user, complaint, mood, severity, fixit, replied, replyText}
+    };
+  }
+
+  // Save data
+  function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // Render login page for Anjali or Shivam
+  function renderLogin() {
+    app.innerHTML = `
+      <h1>Welcome to your grievance addressal portal</h1>
+      <div id="login-text"></div>
+      <label for="username">Username:</label>
+      <input id="username" type="text" autocomplete="username" />
+      <label for="password">Password:</label>
+      <input id="password" type="password" autocomplete="current-password" />
+      <button id="login-btn">Login</button>
+      <div id="login-error" style="color:red; margin-top:10px;"></div>
+    `;
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('login-btn');
+    const loginText = document.getElementById('login-text');
+    const loginError = document.getElementById('login-error');
+
+    usernameInput.focus();
+
+    usernameInput.addEventListener('input', () => {
+      const val = usernameInput.value.trim().toLowerCase();
+      if (val === 'anjali') {
+        loginText.innerHTML = `<p style="color:#d6336c; font-weight:bold;">You can submit your lame, made-up grievances for my viewing pleasure.</p>`;
+      } else if (val === 'shivam') {
+        loginText.innerHTML = `
+          <h3 style="color:#d6336c;">You may now face the drama you signed up for...💘</h3>
+          <h4 style="color:#d6336c;">Your majesty has filed her complaints. Proceed with love</h4>
+          <h4 style="color:#d6336c;">Her Complaints. My Responsibility. Proceed Lovingly.</h4>
+          <h4 style="color:#d6336c;">Your queen awaits your attention. 🫅❤️</h4>
+        `;
+      } else {
+        loginText.innerHTML = '';
+      }
+      loginError.textContent = '';
+    });
+
+    loginBtn.onclick = () => {
+      const username = usernameInput.value.trim().toLowerCase();
+      const password = passwordInput.value.trim();
+
+      if (!users[username]) {
+        loginError.textContent = "Invalid username.";
+        return;
+      }
+      if (users[username] !== password) {
+        loginError.textContent = "Incorrect password.";
+        return;
+      }
+      sessionStorage.setItem('loggedInUser', username);
+      if (username === 'anjali') renderAnjaliDashboard();
+      else renderShivamDashboard();
+    };
+  }
+
+  // Logout function
+  function logout() {
+    sessionStorage.removeItem('loggedInUser');
+    renderLogin();
+  }
+
+  // Anjali dashboard
+  function renderAnjaliDashboard() {
+    const data = getData();
+    const userGrievances = data.grievances.filter(g => g.user === 'anjali');
+    // Remove duplicates by complaint text
+    const uniqueGrievances = [...new Map(userGrievances.map(item => [item.complaint, item])).values()];
+
+    app.innerHTML = `
+      <h1>🎀 Submit Your Grievance 🎀</h1>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+      <form id="grievance-form">
+        <label for="complaint">Your Grievance (type or select):</label>
+        <input list="complaints" id="complaint" name="complaint" placeholder="Type or select a grievance" required />
+        <datalist id="complaints">
+          ${grievancesList.map(c => `<option value="${c}">`).join('')}
+        </datalist>
+
+        <label for="mood">Mood:</label>
+        <select id="mood" required>
+          <option value="" disabled selected>Select your mood</option>
+          ${moodsList.map(m => `<option>${m}</option>`).join('')}
+        </select>
+
+        <label for="severity">Severity:</label>
+        <select id="severity" required>
+          <option value="" disabled selected>Select severity</option>
+          ${severityList.map(s => `<option>${s}</option>`).join('')}
+        </select>
+
+        <label for="fixit">What I'll add/fix exactly:</label>
+        <select id="fixit" required>
+          <option value="" disabled selected>Select fix-it suggestion</option>
+          ${fixitList.map(f => `<option>${f}</option>`).join('')}
+        </select>
+
+        <button type="submit">Submit Grievance</button>
+      </form>
+
+      <h2>Your Complaint History</h2>
+      <div class="history-list" id="anjali-history">
+        ${uniqueGrievances.length === 0 ? "<p>No grievances submitted yet.</p>" : uniqueGrievances.map(g => `
+          <div class="history-item">
+            <strong>Complaint:</strong> ${g.complaint}<br />
+            <strong>Mood:</strong> ${g.mood}<br />
+            <strong>Severity:</strong> ${g.severity}<br />
+            <strong>Fix-it:</strong> ${g.fixit}<br />
+            <strong>Reply from Shivam:</strong> ${g.replyText ? g.replyText : "<em>Waiting...</em>"}
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    document.getElementById('logout-btn').onclick = logout;
+
+    const form = document.getElementById('grievance-form');
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      const complaint = form.complaint.value.trim();
+      const mood = form.mood.value;
+      const severity = form.severity.value;
+      const fixit = form.fixit.value;
+
+      if (!complaint || !mood || !severity || !fixit) return;
+
+      // Avoid duplicate grievances by complaint text for Anjali
+      const exists = data.grievances.find(g => g.user === 'anjali' && g.complaint === complaint);
+      if (exists) {
+        alert('This grievance has already been submitted.');
+        return;
+      }
+
+      data.grievances.push({
+        user: 'anjali',
+        complaint,
+        mood,
+        severity,
+        fixit,
+        replied: false,
+        replyText: ''
+      });
+      saveData(data);
+
+      // Show thank-you message
+      app.innerHTML = `
+        <h2>Thank you, Anjali ❤️</h2>
+        <p>Your grievance has flown straight to Shivam’s heart. He’s working on a sweet fix just for you—stay tuned! 💌❤️</p>
+        <button id="submit-another">Submit another grievance</button>
+      `;
+      document.getElementById('submit-another').onclick = renderAnjaliDashboard;
+    };
+  }
+
+  // Shivam dashboard
+  function renderShivamDashboard() {
+    const data = getData();
+    const unresolved = data.grievances.filter(g => !g.replied);
+
+    function renderHeader() {
+      return `
+        <div class="shivam-header">
+          <h3>You may now face the drama you signed up for...💘</h3>
+          <h4>Your majesty has filed her complaints. Proceed with love</h4>
+          <h4>Her Complaints. My Responsibility. Proceed Lovingly.</h4>
+          <h4>Your queen awaits your attention. 🫅❤️</h4>
+        </div>
+      `;
+    }
+
+    function renderNoComplaints() {
+      app.innerHTML = `
+        ${renderHeader()}
+        <h2>No new grievances. You're all caught up! 🎉</h2>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+        <h3>Complaint History</h3>
+        <div class="history-list" id="shivam-history">
+          ${data.grievances.length === 0 ? "<p>No grievances yet.</p>" : data.grievances.map(g => `
+            <div class="history-item">
+              <strong>Complaint:</strong> ${g.complaint}<br />
+              <strong>Mood:</strong> ${g.mood}<br />
+              <strong>Severity:</strong> ${g.severity}<br />
+              <strong>Fix-it:</strong> ${g.fixit}<br />
+              <strong>Reply:</strong> ${g.replyText || "<em>Not replied yet</em>"}
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      document.getElementById('logout-btn').onclick = logout;
+    }
+
+    function renderComplaint(index = 0) {
+      if (index >= unresolved.length) {
+        renderNoComplaints();
+        return;
+      }
+      const complaint = unresolved[index];
+
+      app.innerHTML = `
+        ${renderHeader()}
+        <h2>Complaint #${index + 1} of ${unresolved.length}</h2>
+        <div>
+          <p><strong>Complaint:</strong> ${complaint.complaint}</p>
+          <p><strong>Mood:</strong> ${complaint.mood}</p>
+          <p><strong>Severity:</strong> ${complaint.severity}</p>
+          <p><strong>Fix-it Suggestion:</strong> ${complaint.fixit}</p>
+        </div>
+        <label for="fix-reply">Select your romantic/dramatic fix reply:</label>
+        <select id="fix-reply" required>
+          <option value="" disabled selected>Select fix reply</option>
+          ${shivamFixReplies.map(r => `<option>${r}</option>`).join('')}
+        </select>
+        <button id="send-fix-btn">Send Fix</button>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+      `;
+
+      document.getElementById('logout-btn').onclick = logout;
+
+      document.getElementById('send-fix-btn').onclick = () => {
+        const fixReply = document.getElementById('fix-reply').value;
+        if (!fixReply) {
+          alert('Please select a fix reply.');
+          return;
+        }
+
+        // Update the grievance
+        complaint.replied = true;
+        complaint.replyText = fixReply;
+        saveData(data);
+
+        // Show thank you message with send another fix button
+        const thankYouMessages = [
+          "Thanks, Shivam 💖 Your sweet fix is a kiss through the screen. She’s falling for you all over again. ❤️‍🔥",
+          "You're her hero again! 🌟 Love is fixed, for now.",
+          "Your fix melted her heart like butter 🧈💕",
+          "A kiss through the screen delivered! 💋",
+          "Sweet fix sent! Keep that love flowing.",
+          "Cupid just took notes, mission accomplished! 🏹",
+          "She’s blushing thanks to you! 😊",
+          "Fix complete. You’re her forever valentine ❤️",
+          "Your love powers activated! 💖✨",
+          "Her heart just skipped a beat. 💓",
+          "You made the queen smile again 👑",
+          "Romantic fix dispatched! 💌",
+          "Another victory for Team Love! 🏆",
+          "Mission ‘Make Anjali Smile’ accomplished!",
+          "Your charm is unstoppable! 💘",
+          "You’re the king of fixes! 👑💕",
+          "Fix applied with extra hugs and kisses! 🤗",
+          "She’s falling all over again, thanks to you.",
+          "Keep those sweet fixes coming! 💕",
+          "The romance is alive and well! 🔥",
+          "You’re a love wizard, Shivam! 🧙‍♂️❤️",
+          "Your sweet words worked like magic ✨",
+          "Another fix, another smile! 😄",
+          "She’s wrapped around your finger again! 💍",
+          "Heart repair successful! 🛠️❤️",
+          "The romance level just went up! 📈💕",
+          "Your fix is a virtual hug 🤗",
+          "Anjali’s heart is your playground! 🎠",
+          "You’ve got the love touch! 💖",
+          "Her day just got brighter ☀️",
+          "Love repaired, smiles restored! 😊",
+          "Fix delivered with a side of sweetness 🍭",
+          "Your words are her happy place 🏡❤️",
+          "Fix sent, heartstrings pulled! 🎻",
+          "You’re her forever fix-it guy 🔧💘",
+          "The queen approves your fix! 👸",
+          "You’re making romance history! 📜❤️",
+          "She’s swooning thanks to you! 🥰",
+          "Your fix is a love potion! 🧪❤️",
+          "Fix complete, romance restored! 💞",
+          "You’ve got the magic touch! ✨",
+          "Love delivered on a silver platter! 🍽️❤️",
+          "You fixed her heart again! ❤️‍🔥",
+          "Mission ‘Keep Her Happy’ accomplished!",
+          "Your fix brought the sunshine ☀️",
+          "Romance fix #1, done! ✔️",
+          "You’re the king of her heart! 👑",
+          "Fix applied with extra love! 💕",
+          "She’s your forever Valentine! 💘"
+        ];
+
+        const randIndex = Math.floor(Math.random() * thankYouMessages.length);
+        const message = thankYouMessages[randIndex];
+
+        app.innerHTML = `
+          ${renderHeader()}
+          <h2>${message}</h2>
+          <button id="send-another-fix">Send Another Fix</button>
+          <button class="logout-btn" id="logout-btn">Logout</button>
+          <h3>Complaint History</h3>
+          <div class="history-list" id="shivam-history">
+            ${data.grievances.length === 0 ? "<p>No grievances yet.</p>" : data.grievances.map(g => `
+              <div class="history-item">
+                <strong>Complaint:</strong> ${g.complaint}<br />
+                <strong>Mood:</strong> ${g.mood}<br />
+                <strong>Severity:</strong> ${g.severity}<br />
+                <strong>Fix-it:</strong> ${g.fixit}<br />
+                <strong>Reply:</strong> ${g.replyText || "<em>Not replied yet</em>"}
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        document.getElementById('send-another-fix').onclick = () => renderShivamDashboard();
+        document.getElementById('logout-btn').onclick = logout;
+      };
+    }
+
+    renderComplaint(0);
+  }
+
+  // Start
+  const loggedInUser = sessionStorage.getItem('loggedInUser');
+  if (loggedInUser) {
+    if (loggedInUser === 'anjali') renderAnjaliDashboard();
+    else renderShivamDashboard();
+  } else {
+    renderLogin();
+  }
+})();
+</script>
+</body>
+</html>
